@@ -2,7 +2,7 @@ from distutils.core import setup
 from distutils.extension import Extension
 from Cython.Distutils import build_ext
 
-compile_util = False
+compile_util = True
 
 if compile_util:
     ext_module = Extension(
