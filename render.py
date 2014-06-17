@@ -96,7 +96,7 @@ def render_preview( engine, scene):
     appleseed_exe = os.path.join( as_bin_path, "appleseed.cli")
     
     # If running Linux/OSX, add the binary path to environment.
-    if 'win' not in sys.platform:
+    if sys.platform != "win32":
         os.environ['LD_LIBRARY_PATH'] = as_bin_path
 
     # Get the addon path so we can use the files in the material preview directory.
@@ -203,7 +203,7 @@ def render_scene( engine, scene):
     appleseed_exe = os.path.join( as_bin_path, ("appleseed.studio" if scene.appleseed.display_mode == 'STUDIO' else "appleseed.cli"))
     
     # If running Linux/OSX, add the binary path to environment.
-    if 'win' not in sys.platform:
+    if sys.platform != "win32":
         os.environ['LD_LIBRARY_PATH'] = as_bin_path
         
     scale = scene.render.resolution_percentage / 100.0
@@ -231,7 +231,7 @@ def render_scene( engine, scene):
                 '--window', str(x), str(y), str(endX), str(endY))
 
         # Launch appleseed.cli.
-        process = subprocess.Popen( cmd, cwd = render_output, env = os.environ.copy())
+        process = subprocess.Popen( cmd, env = os.environ.copy())
         
         # Wait for the rendered image file to be created
         while not os.path.exists( img_file):
@@ -295,7 +295,7 @@ def render_scene( engine, scene):
             cmd = (appleseed_exe, filename, " --render final")
 
         # Launch appleseed.studio.
-        process = subprocess.Popen( cmd, env = os.environ.copy(), cwd = render_output)
+        process = subprocess.Popen( cmd, env = os.environ.copy())
     
 
 class RenderAppleseed( bpy.types.RenderEngine):
