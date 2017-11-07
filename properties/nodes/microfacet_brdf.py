@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,106 +27,93 @@
 #
 
 import bpy
-from bpy.types   import NodeSocket, Node
-from ...util     import addon_dir, strip_spaces, realpath, join_names_underscore, filter_params, debug, asUpdate
+from bpy.types import NodeSocket, Node
+from ...util import asUpdate
 from ..materials import AppleseedMatLayerProps
-from .           import AppleseedNode, AppleseedSocket
+from . import AppleseedNode, AppleseedSocket
 
-#--------------------------------
-# Microfacet diffuse reflectance socket.
-#--------------------------------
-class AppleseedMicrofacetReflectanceSocket( NodeSocket, AppleseedSocket):
+
+class AppleseedMicrofacetReflectanceSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedMicrofacetReflectance"
     bl_label = "Diffuse Reflectance"
-    
+
     socket_value = AppleseedMatLayerProps.microfacet_reflectance
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.8, 0.8, 0.5, 1)
+            layout.prop(self, "socket_value", text=text)
 
-#--------------------------------
-# Microfacet diffuse reflectance multiplier socket.
-#--------------------------------
-class AppleseedMicrofacetMultiplierSocket( NodeSocket, AppleseedSocket):
+    def draw_color(self, context, node):
+        return 0.8, 0.8, 0.5, 1.0
+
+
+class AppleseedMicrofacetMultiplierSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedMicrofacetMultiplier"
     bl_label = "Diffuse Multiplier"
-    
+
     socket_value = AppleseedMatLayerProps.microfacet_multiplier
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.5, 0.5, 0.5, 1)
+            layout.prop(self, "socket_value", text=text)
 
-#--------------------------------
-# Microfacet roughness
-#--------------------------------
-class AppleseedMicrofacetFresnelSocket( NodeSocket, AppleseedSocket):
+    def draw_color(self, context, node):
+        return 0.5, 0.5, 0.5, 1.0
+
+
+class AppleseedMicrofacetFresnelSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedMicrofacetFresnel"
     bl_label = "Fresnel"
-    
+
     socket_value = AppleseedMatLayerProps.microfacet_fresnel
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.5, 0.5, 0.5, 1)
+            layout.prop(self, "socket_value", text=text)
 
-#--------------------------------
-# Microfacet specular reflectance
-#--------------------------------
-class AppleseedMicrofacetGlossinessSocket( NodeSocket, AppleseedSocket):
+    def draw_color(self, context, node):
+        return 0.5, 0.5, 0.5, 1.0
+
+
+class AppleseedMicrofacetGlossinessSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedMicrofacetGlossiness"
     bl_label = "Glossiness"
-    
+
     socket_value = AppleseedMatLayerProps.microfacet_mdf
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.5, 0.5, 0.5, 1)
+            layout.prop(self, "socket_value", text=text)
 
-#--------------------------------
-# Microfacet specular multiplier
-#--------------------------------
-class AppleseedMicrofacetGlossMultSocket( NodeSocket, AppleseedSocket):
+    def draw_color(self, context, node):
+        return 0.5, 0.5, 0.5, 1.0
+
+
+class AppleseedMicrofacetGlossMultSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedMicrofacetGlossMult"
     bl_label = "Glossiness Multiplier"
-    
+
     socket_value = AppleseedMatLayerProps.microfacet_mdf_multiplier
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.5, 0.5, 0.5, 1)
-        
-#--------------------------------
-# Microfacet BRDF node.
-#--------------------------------
-class AppleseedMicrofacetNode( Node, AppleseedNode):
-    '''Appleseed Microfacet BRDF Node'''
+            layout.prop(self, "socket_value", text=text)
+
+    def draw_color(self, context, node):
+        return 0.5, 0.5, 0.5, 1.0
+
+
+class AppleseedMicrofacetNode(Node, AppleseedNode):
     bl_idname = "AppleseedMicrofacetNode"
     bl_label = "Microfacet BRDF"
     bl_icon = 'SMOOTH'
@@ -134,43 +121,44 @@ class AppleseedMicrofacetNode( Node, AppleseedNode):
     node_type = 'microfacet'
 
     microfacet_model = AppleseedMatLayerProps.microfacet_model
-    
-    def init( self, context):
-        self.inputs.new( 'AppleseedMicrofacetReflectance', "Reflectance")
-        self.inputs.new( 'AppleseedMicrofacetMultiplier', "Multiplier")
-        self.inputs.new( 'AppleseedMicrofacetGlossiness', "Glossiness")
-        self.inputs.new( 'AppleseedMicrofacetGlossMult', "Gloss Multiplier")
-        self.inputs.new( 'AppleseedMicrofacetFresnel', "Fresnel Multiplier")
-        self.outputs.new( 'NodeSocketShader', "BRDF")
-        
-    def draw_buttons( self, context, layout):
-        layout.prop( self, "microfacet_model")
-    
+
+    def init(self, context):
+        self.inputs.new('AppleseedMicrofacetReflectance', "Reflectance")
+        self.inputs.new('AppleseedMicrofacetMultiplier', "Multiplier")
+        self.inputs.new('AppleseedMicrofacetGlossiness', "Glossiness")
+        self.inputs.new('AppleseedMicrofacetGlossMult', "Gloss Multiplier")
+        self.inputs.new('AppleseedMicrofacetFresnel', "Fresnel Multiplier")
+        self.outputs.new('NodeSocketShader', "BRDF")
+
+    def draw_buttons(self, context, layout):
+        layout.prop(self, "microfacet_model")
+
     def draw_buttons_ext(self, context, layout):
         pass
-    
-    def copy( self, node):
+
+    def copy(self, node):
         pass
-    
-    def free( self):
-        asUpdate( "Removing node ", self)
-    
-    def draw_label( self):
+
+    def free(self):
+        asUpdate("Removing node ", self)
+
+    def draw_label(self):
         return self.bl_label
 
 
 def register():
-    bpy.utils.register_class( AppleseedMicrofacetMultiplierSocket)
-    bpy.utils.register_class( AppleseedMicrofacetReflectanceSocket)
-    bpy.utils.register_class( AppleseedMicrofacetFresnelSocket)
-    bpy.utils.register_class( AppleseedMicrofacetGlossinessSocket)
-    bpy.utils.register_class( AppleseedMicrofacetGlossMultSocket)
-    bpy.utils.register_class( AppleseedMicrofacetNode)
+    bpy.utils.register_class(AppleseedMicrofacetMultiplierSocket)
+    bpy.utils.register_class(AppleseedMicrofacetReflectanceSocket)
+    bpy.utils.register_class(AppleseedMicrofacetFresnelSocket)
+    bpy.utils.register_class(AppleseedMicrofacetGlossinessSocket)
+    bpy.utils.register_class(AppleseedMicrofacetGlossMultSocket)
+    bpy.utils.register_class(AppleseedMicrofacetNode)
+
 
 def unregister():
-    bpy.utils.unregister_class( AppleseedMicrofacetNode)
-    bpy.utils.unregister_class( AppleseedMicrofacetMultiplierSocket)
-    bpy.utils.unregister_class( AppleseedMicrofacetReflectanceSocket)
-    bpy.utils.unregister_class( AppleseedMicrofacetFresnelSocket)
-    bpy.utils.unregister_class( AppleseedMicrofacetGlossinessSocket)
-    bpy.utils.unregister_class( AppleseedMicrofacetGlossMultSocket)
+    bpy.utils.unregister_class(AppleseedMicrofacetNode)
+    bpy.utils.unregister_class(AppleseedMicrofacetMultiplierSocket)
+    bpy.utils.unregister_class(AppleseedMicrofacetReflectanceSocket)
+    bpy.utils.unregister_class(AppleseedMicrofacetFresnelSocket)
+    bpy.utils.unregister_class(AppleseedMicrofacetGlossinessSocket)
+    bpy.utils.unregister_class(AppleseedMicrofacetGlossMultSocket)

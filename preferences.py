@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -28,19 +28,22 @@
 
 import bpy
 
-class AppleseedPreferencesPanel( bpy.types.AddonPreferences):
+
+class AppleseedPreferencesPanel(bpy.types.AddonPreferences):
     bl_idname = __package__
-    
-    appleseed_bin_path = bpy.props.StringProperty(  name = "Appleseed binary directory",
-                                                	description = "Path to Appleseed binary directory",
-                                                	subtype = 'DIR_PATH',
-                                                	default = "")
+
+    appleseed_bin_path = bpy.props.StringProperty(name="appleseed binary directory",
+                                                  description="Path to appleseed binary directory",
+                                                  subtype='DIR_PATH',
+                                                  default="")
 
     def draw(self, context):
-        self.layout.prop( self, "appleseed_bin_path")
+        self.layout.prop(self, "appleseed_bin_path")
+
 
 def register():
-    bpy.utils.register_class( AppleseedPreferencesPanel)
+    bpy.utils.register_class(AppleseedPreferencesPanel)
+
 
 def unregister():
-    bpy.utils.unregister_class( AppleseedPreferencesPanel)
+    bpy.utils.unregister_class(AppleseedPreferencesPanel)

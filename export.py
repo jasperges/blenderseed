@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -28,37 +28,42 @@
 
 import bpy
 from bpy_extras.io_utils import ExportHelper
-import os
+
 from . import project_file_writer
 from . import util
 
-class ExportAppleseedScene( bpy.types.Operator, ExportHelper):
-    """Saves an appleseed scene"""
+
+class ExportAppleseedScene(bpy.types.Operator, ExportHelper):
+    """
+    Export the scene to an appleseed project on disk.
+    """
+
     bl_idname = "appleseed.export_scene"
-    bl_label = "Export Appleseed Scene"
+    bl_label = "Export appleseed Scene"
 
     filename_ext = ".appleseed"
-    filter_glob = bpy.props.StringProperty( default = "*.appleseed", options = {'HIDDEN'},)
-    
+    filter_glob = bpy.props.StringProperty(default="*.appleseed", options={'HIDDEN'})
+
     @classmethod
-    def poll( cls, context):
+    def poll(cls, context):
         renderer = context.scene.render
         return renderer.engine == 'APPLESEED_RENDER'
-        
-    def execute( self, context):
-        scene = context.scene
-        appleseed_proj = project_file_writer.write_project_file( None)
-        appleseed_proj.export( scene, util.realpath( self.filepath))
+
+    def execute(self, context):
+        exporter = project_file_writer.Exporter()
+        exporter.export(context.scene, util.realpath(self.filepath))
         return {'FINISHED'}
 
-def menu_func_export_scene( self, context):
-    self.layout.operator( ExportAppleseedScene.bl_idname, text = "Appleseed (.appleseed)")
+
+def menu_func_export_scene(self, context):
+    self.layout.operator(ExportAppleseedScene.bl_idname, text="appleseed (.appleseed)")
+
 
 def register():
-    bpy.utils.register_class( ExportAppleseedScene)
-    bpy.types.INFO_MT_file_export.append( menu_func_export_scene)
+    bpy.utils.register_class(ExportAppleseedScene)
+    bpy.types.INFO_MT_file_export.append(menu_func_export_scene)
 
 
 def unregister():
-    bpy.utils.unregister_class( ExportAppleseedScene)
-    bpy.types.INFO_MT_file_export.remove( menu_func_export_scene)
+    bpy.utils.unregister_class(ExportAppleseedScene)
+    bpy.types.INFO_MT_file_export.remove(menu_func_export_scene)

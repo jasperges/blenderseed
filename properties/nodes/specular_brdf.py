@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,86 +27,79 @@
 #
 
 import bpy
-from bpy.types   import NodeSocket, Node
-from ...util     import addon_dir, strip_spaces, realpath, join_names_underscore, filter_params, debug, asUpdate
+from bpy.types import NodeSocket, Node
+from ...util import asUpdate
 from ..materials import AppleseedMatLayerProps
-from .           import AppleseedNode, AppleseedSocket
+from . import AppleseedNode, AppleseedSocket
 
-#--------------------------------
-# Specular diffuse color socket.
-#--------------------------------
-class AppleseedSpecBRDFReflectanceSocket( NodeSocket, AppleseedSocket):
+
+class AppleseedSpecBRDFReflectanceSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedSpecBRDFReflectance"
     bl_label = "Reflectance"
-    
+
     socket_value = AppleseedMatLayerProps.specular_reflectance
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.8, 0.8, 0.5, 1)
+            layout.prop(self, "socket_value", text=text)
 
-#--------------------------------
-# Specular diffuse multiplier socket.
-#--------------------------------
-class AppleseedSpecBRDFMultiplierSocket( NodeSocket, AppleseedSocket):
+    def draw_color(self, context, node):
+        return 0.8, 0.8, 0.5, 1.0
+
+
+class AppleseedSpecBRDFMultiplierSocket(NodeSocket, AppleseedSocket):
     bl_idname = "AppleseedSpecBRDFMultiplier"
     bl_label = "Multiplier"
-    
+
     socket_value = AppleseedMatLayerProps.specular_multiplier
 
-    def draw( self, context, layout, node, text):
+    def draw(self, context, layout, node, text):
         if self.is_output or self.is_linked:
-            layout.label( text)
+            layout.label(text)
         else:
-            layout.prop( self, "socket_value", text = text)
-    
-    def draw_color( self, context, node):
-        return (0.5, 0.5, 0.5, 1)
-        
-#--------------------------------
-# Specular BRDF node.
-#--------------------------------
-class AppleseedSpecBRDFNode( Node, AppleseedNode):
-    '''Appleseed Specular BRDF Node'''
+            layout.prop(self, "socket_value", text=text)
+
+    def draw_color(self, context, node):
+        return 0.5, 0.5, 0.5, 1.0
+
+
+class AppleseedSpecBRDFNode(Node, AppleseedNode):
     bl_idname = "AppleseedSpecBRDFNode"
     bl_label = "Specular BRDF"
     bl_icon = 'SMOOTH'
 
     node_type = 'specular_brdf'
 
-    def init( self, context):
-        self.inputs.new( 'AppleseedSpecBRDFReflectance', "Reflectance")
-        self.inputs.new( 'AppleseedSpecBRDFMultiplier', "Multiplier")
-        self.outputs.new( 'NodeSocketShader', "BRDF")
-        
-    def draw_buttons( self, context, layout):
+    def init(self, context):
+        self.inputs.new('AppleseedSpecBRDFReflectance', "Reflectance")
+        self.inputs.new('AppleseedSpecBRDFMultiplier', "Multiplier")
+        self.outputs.new('NodeSocketShader', "BRDF")
+
+    def draw_buttons(self, context, layout):
         pass
-    
+
     def draw_buttons_ext(self, context, layout):
         pass
-    
-    def copy( self, node):
+
+    def copy(self, node):
         pass
-    
-    def free( self):
-        asUpdate( "Removing node ", self)
-    
-    def draw_label( self):
+
+    def free(self):
+        asUpdate("Removing node ", self)
+
+    def draw_label(self):
         return self.bl_label
 
 
 def register():
-    bpy.utils.register_class( AppleseedSpecBRDFMultiplierSocket)
-    bpy.utils.register_class( AppleseedSpecBRDFReflectanceSocket)
-    bpy.utils.register_class( AppleseedSpecBRDFNode)
+    bpy.utils.register_class(AppleseedSpecBRDFMultiplierSocket)
+    bpy.utils.register_class(AppleseedSpecBRDFReflectanceSocket)
+    bpy.utils.register_class(AppleseedSpecBRDFNode)
+
 
 def unregister():
-    bpy.utils.unregister_class( AppleseedSpecBRDFNode)
-    bpy.utils.unregister_class( AppleseedSpecBRDFMultiplierSocket)
-    bpy.utils.unregister_class( AppleseedSpecBRDFReflectanceSocket)
-    
+    bpy.utils.unregister_class(AppleseedSpecBRDFNode)
+    bpy.utils.unregister_class(AppleseedSpecBRDFMultiplierSocket)
+    bpy.utils.unregister_class(AppleseedSpecBRDFReflectanceSocket)

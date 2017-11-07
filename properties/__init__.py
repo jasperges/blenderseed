@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -27,7 +27,6 @@
 #
 
 import bpy
-from . import render_layers
 from . import scene
 from . import world
 from . import objects
@@ -39,7 +38,6 @@ from . import lamps
 
 
 def register():
-    render_layers.register()
     scene.register()
     world.register()
     objects.register()
@@ -48,9 +46,9 @@ def register():
     nodes.register()
     particles.register()
     lamps.register()
-    
+
+
 def unregister():
-    render_layers.unregister()
     scene.unregister()
     world.unregister()
     objects.unregister()

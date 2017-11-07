@@ -5,7 +5,7 @@
 #
 # This software is released under the MIT license.
 #
-# Copyright (c) 2013 Franz Beaune, Joel Daniels, Esteban Tovagliari.
+# Copyright (c) 2014-2017 The appleseedhq Organization
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
@@ -32,15 +32,17 @@ import subprocess
 from .. import project_file_writer
 from .. import util
 
-#---------------------------------------
-# Operator for adding material layers.
-#---------------------------------------
-class AppleseedAddMatLayer( bpy.types.Operator):
+
+class AppleseedAddMatLayer(bpy.types.Operator):
+    """
+    Operator for adding material layers.
+    """
+
     bl_label = "Add Layer"
     bl_description = "Add new BSDF layer"
     bl_idname = "appleseed.add_matlayer"
-    
-    def invoke( self, context, event):
+
+    def invoke(self, context, event):
         scene = context.scene
         material = context.object.active_material
         collection = material.appleseed.layers
@@ -48,159 +50,89 @@ class AppleseedAddMatLayer( bpy.types.Operator):
 
         collection.add()
         num = collection.__len__()
-        collection[num-1].name = "BSDF Layer " + str(num)
-        
+        collection[num - 1].name = "BSDF Layer " + str(num)
+
         return {'FINISHED'}
 
-#---------------------------------------  
-# Operator for removing material layers.
-#---------------------------------------
-class AppleseedRemoveMatLayer( bpy.types.Operator):
+
+class AppleseedRemoveMatLayer(bpy.types.Operator):
+    """
+    Operator for removing material layers.
+    """
+
     bl_label = "Remove Layer"
     bl_description = "Remove BSDF layer"
     bl_idname = "appleseed.remove_matlayer"
-        
-    def invoke( self, context, event):
+
+    def invoke(self, context, event):
         scene = context.scene
         material = context.object.active_material
         collection = material.appleseed.layers
         index = material.appleseed.layer_index
 
-        collection.remove( index)
+        collection.remove(index)
         num = collection.__len__()
         if index >= num:
-            index = num -1
+            index = num - 1
         if index < 0:
             index = 0
         material.appleseed.layer_index = index
-            
-        return {'FINISHED'}
-
-#--------------------------------------- 
-# Operator for adding render layers.
-#---------------------------------------
-class AppleseedAddRenderLayer( bpy.types.Operator):
-    bl_label = "Add Layer"
-    bl_idname = "appleseed.add_renderlayer"
-    
-    def invoke( self, context, event):
-        scene = context.scene
-        collection = scene.appleseed_layers.layers
-        index = scene.appleseed_layers.layer_index
-
-        collection.add()
-        num = collection.__len__()
-        collection[num-1].name = "Render Layer " + str(num)
-            
-        return {'FINISHED'}
-
-#--------------------------------------- 
-# Operator for removing render layers.
-#---------------------------------------
-class AppleseedRemoveRenderLayer( bpy.types.Operator):
-    bl_label = "Remove Layer"
-    bl_idname = "appleseed.remove_renderlayer"
-        
-    def invoke( self, context, event):
-        scene = context.scene
-        collection = scene.appleseed_layers.layers
-        index = scene.appleseed_layers.layer_index
-
-        collection.remove( index)
-        num = collection.__len__()
-        if index >= num:
-            index = num -1
-        if index < 0:
-            index = 0
-        scene.appleseed_layers.layer_index = index
-        
-        return {'FINISHED'}
-
-#--------------------------------------- 
-# Operator for adding objects to render layers.
-#---------------------------------------
-class AppleseedAddToRenderLayer( bpy.types.Operator):
-    bl_label = "Add Selected To Layer"
-    bl_idname = "appleseed.add_to_renderlayer"
-
-    def execute( self, context):
-        scene = context.scene
-        layers = scene.appleseed_layers.layers
-        index = scene.appleseed_layers.layer_index
-        for ob in context.selected_objects:
-            ob.appleseed.render_layer = layers[ index].name
 
         return {'FINISHED'}
 
-#--------------------------------------- 
-# Operator for removing objects from render layers.
-#---------------------------------------
-class AppleseedRemoveFromRenderLayer( bpy.types.Operator):
-    bl_label = "Remove Selected From Layer"
-    bl_idname = "appleseed.remove_from_renderlayer"
 
-    def execute( self, context):
-        for ob in context.selected_objects:
-            ob.appleseed.render_layer = ''
+class AppleseedNewNodeTree(bpy.types.Operator):
+    """
+    appleseed material node tree generator.
+    """
 
-        return {'FINISHED'}
-        
-#---------------------------------------
-# appleseed material node tree generator.
-#---------------------------------------
-class AppleseedNewNodeTree( bpy.types.Operator):
     bl_idname = "appleseed.add_material_nodetree"
     bl_label = "Add appleseed Material Node Tree"
     bl_description = "Create an appleseed material node tree and link it to the current material"
 
-    def execute( self, context):
+    def execute(self, context):
         material = context.object.active_material
-        nodetree = bpy.data.node_groups.new( '%s appleseed Nodetree' % material.name, 'AppleseedNodeTree')
+        nodetree = bpy.data.node_groups.new('%s appleseed Nodetree' % material.name, 'AppleseedNodeTree')
         nodetree.use_fake_user = True
-        node = nodetree.nodes.new( 'AppleseedMaterialNode')
+        node = nodetree.nodes.new('AppleseedMaterialNode')
         material.appleseed.node_tree = nodetree.name
         material.appleseed.node_output = node.name
 
         return {'FINISHED'}
-        
-#---------------------------------------
-# appleseed export operator.
-#---------------------------------------
-class AppleseedExportOperator( bpy.types.Operator):
+
+
+class AppleseedExportOperator(bpy.types.Operator):
+    """
+    appleseed export operator.
+    """
+
     bl_idname = "appleseed.export"
     bl_label = "Export"
 
     inst_set = set()
     psysob_set = set()
     exported_obs = set()
-    
-    def execute( self, context):
+
+    def execute(self, context):
         scene = context.scene
         if scene.appleseed.project_path == '':
-            return {'CANCELLED'}  
+            return {'CANCELLED'}
 
-        file_path = os.path.join( util.realpath( scene.appleseed.project_path), scene.name + ".appleseed")
-        
-        appleseed_proj = project_file_writer.write_project_file()
-        appleseed_proj.export( scene, file_path)
-            
+        file_path = os.path.join(util.realpath(scene.appleseed.project_path), scene.name + ".appleseed")
+
+        exporter = project_file_writer.Exporter()
+        exporter.export(scene, file_path)
+
         return {'FINISHED'}
 
 
 def register():
-    bpy.utils.register_class( AppleseedAddMatLayer)
-    bpy.utils.register_class( AppleseedRemoveMatLayer)
-    bpy.utils.register_class( AppleseedAddRenderLayer)
-    bpy.utils.register_class( AppleseedAddToRenderLayer)
-    bpy.utils.register_class( AppleseedRemoveRenderLayer)
-    bpy.utils.register_class( AppleseedRemoveFromRenderLayer)
-    bpy.utils.register_class( AppleseedExportOperator)
+    bpy.utils.register_class(AppleseedAddMatLayer)
+    bpy.utils.register_class(AppleseedRemoveMatLayer)
+    bpy.utils.register_class(AppleseedExportOperator)
+
 
 def unregister():
-    bpy.utils.unregister_class( AppleseedAddMatLayer)
-    bpy.utils.unregister_class( AppleseedRemoveMatLayer)
-    bpy.utils.unregister_class( AppleseedAddRenderLayer)
-    bpy.utils.unregister_class( AppleseedAddToRenderLayer)
-    bpy.utils.unregister_class( AppleseedRemoveRenderLayer)
-    bpy.utils.unregister_class( AppleseedRemoveFromRenderLayer)
-    bpy.utils.unregister_class( AppleseedExportOperator)
+    bpy.utils.unregister_class(AppleseedAddMatLayer)
+    bpy.utils.unregister_class(AppleseedRemoveMatLayer)
+    bpy.utils.unregister_class(AppleseedExportOperator)
